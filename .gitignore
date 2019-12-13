@@ -1,0 +1,8 @@
+venv/
+*.json
+*.log
+.idea
+Curly.egg-info
+dist
+*.iml
+__pycache__
