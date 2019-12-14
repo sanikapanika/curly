@@ -34,9 +34,11 @@ class Request(BaseRequest):
         else:
             self.host = "http://" + self.host
 
-        r = requests.post(self.host + self.path, data=self.payload, headers=self.headers)
-
-        print_info(r.text)
+        try:
+            r = requests.post(self.host + self.path, data=self.payload, headers=self.headers)
+            print_info(r.text)
+        except Exception:
+            print_error("Error: Cant fetch response. Check parameters")
 
     def save(self, args):
         if os.path.isfile('templates/post/' + args[0] + '.json'):
@@ -56,6 +58,7 @@ class Request(BaseRequest):
             for key in self.module_attributes:
                 for p in data:
                     if key == p:
+                        setattr(self, key, data[p][0])
                         self.module_attributes[key][0] = data[p][0]
                         continue
         print_status("Template {} loaded successfully".format(args[0]))
