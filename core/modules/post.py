@@ -21,6 +21,7 @@ class Request(BaseRequest):
     payload = OptString("")
     headers = OptList("")
     query_params = OptList("")
+    path_params = OptList("")
 
     def run(self):
         if self.host is None or self.host is "":
@@ -68,3 +69,11 @@ class Request(BaseRequest):
             return True
         else:
             return False
+
+    def _forge_path_params(self):
+        url_raw = self.path
+        for param in self.path_params:
+            if url_raw.find("{"+param+"}") != -1:
+                url_raw = url_raw.replace("{"+param+"}", self.path_params[param])
+
+        return url_raw

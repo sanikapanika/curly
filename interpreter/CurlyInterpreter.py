@@ -355,15 +355,17 @@ _________              .__
 
     @module_required
     def command_add(self, *args, **kwargs):
-        key, _, value = args[0].partition(" ")
+        key = args[0]
         if key in self.current_module.options:
-            if 'value' in kwargs:
-                templist = getattr(self.current_module, key)
-                templist[value] = kwargs.get('value')
-                setattr(self.current_module, key, templist)
-                self.current_module.module_attributes[key][0][value] = kwargs.get('value')
+            templist = getattr(self.current_module, key)
+            print_info("Header name:")
+            value = input()
+            print_info("Header value:")
+            templist[value] = input()
+            setattr(self.current_module, key, templist)
+            self.current_module.module_attributes[key][0][value] = templist[value]
 
-                print_success("{} => {}: {}".format(key, value, kwargs.get('value')))
+            print_success("{} => {}: {}".format(key, value, templist[value]))
 
     @module_required
     def command_delete(self, *args, **kwargs):
