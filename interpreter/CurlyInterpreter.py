@@ -166,7 +166,7 @@ class CurlyInterpreter(BaseInterpreter):
         self.raw_prompt_template = None
         self.module_prompt_template = None
         self.prompt_hostname = "cfw"
-        self.show_sub_commands = ("info", "options", "advanced", "all", "creds", "modules")
+        self.show_sub_commands = ("info", "options", "advanced", "all", "templates", "modules")
         self.search_sub_commands = ("type", "payload")
 
         self.global_commands = sorted(["use ", "exec ", "help", "exit", "show ", "search "])
@@ -471,12 +471,19 @@ _________              .__
 
         print_info()
 
-    def __show_modules(self, root=''):
+    def _show_modules(self, root=''):
         for module in [module for module in self.modules if module.startswith(root)]:
             print_info(module.replace('.', os.sep))
 
     def _show_all(self, *args, **kwargs):
-        self.__show_modules()
+        self._show_modules()
+
+    def _show_templates(self, *args, **kwargs):
+        if 'module' in kwargs.keys():
+            for template in [template for template in self.saved_templates if template.startswith(kwargs.get('module'))]:
+                print_info(template.replace('.', os.sep))
+        else:
+            print_error("You must specify for which module. Available: {}".format(self.modules))
 
     def command_show(self, *args, **kwargs):
         sub_command = args[0]
