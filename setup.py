@@ -6,7 +6,7 @@ setup(
         description="Curl framework to ease cli request forgery",
         long_description=None,
         author="AjferSanjo",
-        author_email="sanin.alagic@gmail.com",
+        author_email="",
         url="",
         download_url="",
         packages=find_packages(),
