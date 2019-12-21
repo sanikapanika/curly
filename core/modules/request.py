@@ -9,7 +9,7 @@ import json
 
 class Request(BaseRequest):
     __info__ = {
-        "name": "Post Request module",
+        "name": "Request module",
         "authors": (
             "AjferSanjo",
         ),
