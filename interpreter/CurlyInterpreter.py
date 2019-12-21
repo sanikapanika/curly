@@ -155,7 +155,8 @@ class CurlyInterpreter(BaseInterpreter):
     set <option name> <option value>    Set an option for the selected template
     setg <option name> <option value>   Set an option for all the templates
     unsetg <option name>                Unset an option that was set globally
-    show [info|options]                 Print information or options for a template
+    show [info|options]                 Print information or options for a module
+    show templates [module]             Print saved tempaltes for a module
     check                               Check if given host is reachable"""
 
     def __init__(self):
@@ -306,13 +307,19 @@ _________              .__
     @module_required
     def command_run(self, *args, **kwargs):
         print_status("Running module {}...".format(self.current_module))
+        sub_command = args[0]
         try:
-            self.current_module.run()
+            getattr(self.current_module, sub_command)()
         except KeyboardInterrupt:
             print_info()
             print_error("Operation cancelled by user")
-        except Exception:
-            print_error(traceback.format_exc(sys.exc_info()))
+        except AttributeError:
+            if sub_command is '':
+                print_error("Usage: run <request method: {}>".format("get, post, put, delete"))
+            else:
+                print_error("Unknown command [{}]".format(sub_command))
+        except Exception as ex:
+            print_error(str(ex))
 
     @module_required
     def command_save(self, *args, **kwargs):
@@ -480,12 +487,11 @@ _________              .__
     def _show_all(self, *args, **kwargs):
         self._show_modules()
 
+    @module_required
     def _show_templates(self, *args, **kwargs):
-        if 'module' in kwargs.keys():
-            for template in [template for template in self.saved_templates if template.startswith(kwargs.get('module'))]:
-                print_info(template.replace('.', os.sep))
-        else:
-            print_error("You must specify for which module. Available: {}".format(self.modules))
+        modulename = type(self.current_module).__name__
+        for template in [template for template in self.saved_templates if template.startswith(modulename)]:
+            print_info(template.replace('.', os.sep))
 
     def command_show(self, *args, **kwargs):
         sub_command = args[0]

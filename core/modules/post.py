@@ -16,30 +16,65 @@ class Request(BaseRequest):
     }
 
     host = OptString("")
-    ssl = OptBool(False)
+    scheme = OptString("")
     path = OptString("")
     payload = OptString("")
     headers = OptList("")
     query_params = OptList("")
     path_params = OptList("")
 
-    def run(self):
-        if self.host is None or self.host is "":
-            print_error("Must specify valid host")
-            return
-        if self.path is None or self.path is "":
-            print_error("Must specify valid path")
-            return
-        if self.ssl:
-            self.host = "https://" + self.host
-        else:
-            self.host = "http://" + self.host
+    def get(self):
 
         try:
-            r = requests.post(self.host + self.path, data=self.payload, headers=self.headers)
-            print_info(r.text)
-        except Exception:
-            print_error("Error: Cant fetch response. Check parameters")
+            self._assert_valid()
+            print_info("Aiming for: " + self.scheme + "://" + self.host + self.path)
+            self.path = self._forge_path_params()
+            r = requests.get(self.scheme + "://" + self.host + self.path, headers=self.headers)
+            for key in r.headers:
+                print_info(key, r.headers[key])
+            print("Body:" + r.text)
+        except Exception as ex:
+            print_error(str(ex))
+
+    def post(self):
+
+        try:
+            self._assert_valid()
+            print_info("Aiming for: " + self.scheme + "://" + self.host + self.path)
+            self.path = self._forge_path_params()
+            r = requests.post(self.scheme + "://" + self.host + self.path, headers=self.headers, data=self.payload)
+            for key in r.headers:
+                print_info(key, r.headers[key])
+            print("Body:" + r.text)
+        except Exception as ex:
+            print_error(ex)
+
+    def put(self):
+
+        try:
+            self._assert_valid()
+            print_info("Aiming for: " + self.scheme + "://" + self.host + self.path)
+            self.path = self._forge_path_params()
+            r = requests.put(self.scheme + "://" + self.host + self.path, headers=self.headers, data=self.payload)
+            for key in r.headers:
+                print_info(key, r.headers[key])
+            print("Body:" + r.text)
+        except Exception as ex:
+            print_error(str(ex))
+
+    def delete(self):
+
+        try:
+            self._assert_valid()
+            print_info("Aiming for: " + self.scheme + "://" + self.host + self.path)
+            self.path = self._forge_path_params()
+            r = requests.delete(self.scheme + "://" + self.host + self.path, headers=self.headers, data=self.payload)
+            for key in r.headers:
+                print_info(key, r.headers[key])
+            print("Body:" + r.text)
+        except Exception as ex:
+            print_error(str(ex))
+
 
     def save(self, args):
         if os.path.isfile('templates/post/' + args[0] + '.json'):
@@ -64,11 +99,13 @@ class Request(BaseRequest):
                         continue
         print_status("Template {} loaded successfully".format(args[0]))
 
-    def _everything_set(self):
-        if self.host is not None and self.path is not None:
-            return True
-        else:
-            return False
+    def _assert_valid(self):
+        if self.host is None or self.host is "":
+            raise Exception("Must specify valid host")
+        if self.path is None or self.path is "":
+            raise Exception("Must specify valid path")
+        if self.scheme != "http" and self.scheme != "https":
+            raise Exception("Must specify valid scheme: [ https | http ]")
 
     def _forge_path_params(self):
         url_raw = self.path
