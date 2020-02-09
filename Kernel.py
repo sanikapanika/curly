@@ -4,7 +4,7 @@ import sys
 
 
 if sys.version_info.major < 3:
-    print("CurlFramework supports only Python3. Rerun application in Python3 environment.")
+    print("Curly only supports Python3 or greater. Rerun application in Python3 environment.")
     exit(0)
 
 from interpreter.CurlyInterpreter import CurlyInterpreter
