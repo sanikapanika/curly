@@ -518,8 +518,8 @@ _________              .__
         mod_detail = ''
         mod_vendor = ''
         existing_modules = [name for _, name, _ in pkgutil.iter_modules([MODULES_DIR])]
-        # TODO: Probably gonna need refractoring
-        devices = [name for _, name, _ in pkgutil.iter_modules([os.path.join(MODULES_DIR, 'exploits')])]
+        # TODO: Probably gonna need refactoring
+        devices = [name for _, name, _ in pkgutil.iter_modules([os.path.join(MODULES_DIR, 'modules')])]
         payloads = [name for _, name, _ in pkgutil.iter_modules([os.path.join(MODULES_DIR, 'payloads')])]
 
         try:
@@ -529,7 +529,7 @@ _________              .__
 
         if not (len(keyword) or len(kwargs.keys())):
             print_error("Please specify at least one search keyword")
-            print_error("You can specify options, eg 'search type=exploits etc'")
+            print_error("You can specify options, eg 'search type=modules etc'")
 
         for (key, value) in kwargs.items():
             if key == 'type':
@@ -539,7 +539,7 @@ _________              .__
                 mod_type = "{}.".format(value)
             elif key in ['device', 'language', 'payload']:
                 if key == 'device' and (value not in devices):
-                    print_error("Unknown exploit type")
+                    print_error("Unknown module type")
                     return
                 elif key == 'payload' and (value not in payloads):
                     print_error("Unknown payload type")
